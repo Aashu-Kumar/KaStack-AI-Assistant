@@ -8,6 +8,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aashu.kai.viewmodel.OnboardingViewModel
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 @Composable
 fun OnboardingScreen(
@@ -20,6 +22,8 @@ fun OnboardingScreen(
         pageCount = { 3 }
     )
 
+    val coroutineScope = rememberCoroutineScope()
+
     LaunchedEffect(pagerState.currentPage) {
         viewModel.updateCurrentPage(pagerState.currentPage)
     }
@@ -31,12 +35,37 @@ fun OnboardingScreen(
 
         when (page) {
 
-            0 -> StepOne()
+            0 -> StepOne(
+                onNext = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(1)
+                    }
+                }
+            )
 
-            1 -> StepTwo()
+            1 -> StepTwo(
+                viewModel = viewModel,
+                onBack = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(0)
+                    }
+                },
+                onNext = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(2)
+                    }
+                }
+            )
 
-            2 -> StepThree()
-
+            2 -> StepThree(
+                viewModel = viewModel,
+                onBack = {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(1)
+                    }
+                },
+                onFinish = onOnboardingComplete
+            )
         }
     }
 }

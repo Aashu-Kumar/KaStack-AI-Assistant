@@ -25,9 +25,7 @@ class OnboardingViewModel : ViewModel() {
     fun updateAge(age: String) {
         _uiState.update {
             it.copy(
-                userProfile = it.userProfile.copy(
-                    age = age.toIntOrNull()
-                ),
+                userProfile = it.userProfile.copy(age = age),
                 errorMessage = null
             )
         }
@@ -78,7 +76,7 @@ class OnboardingViewModel : ViewModel() {
                 false
             }
 
-            profile.age == null -> {
+            profile.age.isBlank() || profile.age.toIntOrNull() == null -> {
                 showError("Enter a valid age")
                 false
             }
