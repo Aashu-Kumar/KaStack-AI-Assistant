@@ -1,33 +1,45 @@
 package com.aashu.kai.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.aashu.kai.ui.components.AuraCircle
 
 @Composable
 fun HomeScreen() {
 
-    Surface(
+    var uiState by remember {
+        mutableStateOf(HomeUiState())
+    }
+
+    Column(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
 
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+        AuraSection()
 
-            AuraCircle(
-                modifier = Modifier.size(280.dp)
-            )
-        }
+        ChatList(
+            messages = uiState.messages,
+            modifier = Modifier.weight(1f)
+        )
+
+        ChatInput(
+            text = uiState.currentMessage,
+            isVisible = uiState.isInputVisible,
+            onTextChanged = {
+                uiState = uiState.copy(currentMessage = it)
+            },
+            onKeyboardClick = {
+                uiState = uiState.copy(
+                    isInputVisible = !uiState.isInputVisible
+                )
+            }
+        )
     }
 }
