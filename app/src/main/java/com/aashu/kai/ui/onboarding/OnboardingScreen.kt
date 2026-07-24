@@ -5,17 +5,27 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aashu.kai.viewmodel.OnboardingViewModel
-import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aashu.kai.data.datastore.UserPreferencesRepository
+import com.aashu.kai.viewmodel.OnboardingViewModel
+import com.aashu.kai.viewmodel.OnboardingViewModelFactory
+import kotlinx.coroutines.launch
 
 @Composable
 fun OnboardingScreen(
-    onOnboardingComplete: () -> Unit,
-    viewModel: OnboardingViewModel = viewModel()
+    onOnboardingComplete: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
+    val viewModel: OnboardingViewModel = viewModel(
+        factory = OnboardingViewModelFactory(
+            UserPreferencesRepository(context)
+        )
+    )
 
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -64,7 +74,10 @@ fun OnboardingScreen(
                         pagerState.animateScrollToPage(1)
                     }
                 },
-                onFinish = onOnboardingComplete
+                onFinish = {
+                    viewModel.completeOnboarding()
+                    onOnboardingComplete()
+                }
             )
         }
     }

@@ -7,11 +7,29 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import androidx.lifecycle.viewModelScope
+import com.aashu.kai.data.datastore.UserPreferences
+import com.aashu.kai.data.datastore.UserPreferencesRepository
+import kotlinx.coroutines.launch
 
-class OnboardingViewModel : ViewModel() {
+class OnboardingViewModel(
+    private val repository: UserPreferencesRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
     val uiState: StateFlow<OnboardingUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            repository.userPreferences.collect { preferences ->
+                _uiState.update {
+                    it.copy(
+                        userProfile = preferences.userProfile
+                    )
+                }
+            }
+        }
+    }
 
     fun updateName(name: String) {
         _uiState.update {
@@ -125,6 +143,19 @@ class OnboardingViewModel : ViewModel() {
         }
 
         return true
+    }
+
+    fun completeOnboarding() {
+
+        viewModelScope.launch {
+
+            repository.saveUserPreferences(
+                UserPreferences(
+                    onboardingCompleted = true,
+                    userProfile = _uiState.value.userProfile
+                )
+            )
+        }
     }
 
     private fun showError(message: String) {
