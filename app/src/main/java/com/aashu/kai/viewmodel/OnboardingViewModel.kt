@@ -60,6 +60,28 @@ class OnboardingViewModel : ViewModel() {
         }
     }
 
+    fun toggleTrait(trait: String) {
+        _uiState.update { state ->
+
+            val selected = state.userProfile.personalityTraits.toMutableList()
+
+            if (selected.contains(trait)) {
+                selected.remove(trait)
+            } else {
+                if (selected.size < 3) {
+                    selected.add(trait)
+                }
+            }
+
+            state.copy(
+                userProfile = state.userProfile.copy(
+                    personalityTraits = selected
+                ),
+                errorMessage = null
+            )
+        }
+    }
+
     fun updateCurrentPage(page: Int) {
         _uiState.update {
             it.copy(currentPage = page)
