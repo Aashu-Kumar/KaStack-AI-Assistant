@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,8 +26,10 @@ import androidx.compose.ui.unit.dp
 fun ChatInput(
     text: String,
     isVisible: Boolean,
+    isListening: Boolean,
     onTextChanged: (String) -> Unit,
     onKeyboardClick: () -> Unit,
+    onMicClick: () -> Unit,
     onSendClick: () -> Unit
 ) {
 
@@ -45,40 +49,59 @@ fun ChatInput(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            if (!isVisible) {
-
-                IconButton(
-                    onClick = onKeyboardClick
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Keyboard,
-                        contentDescription = "Keyboard"
-                    )
-                }
-
-            } else {
-
-                OutlinedTextField(
-                    value = text,
-                    onValueChange = onTextChanged,
-                    modifier = Modifier.weight(1f),
-                    placeholder = {
-                        Text("Type a message")
-                    },
-                    singleLine = true,
-                    shape = RoundedCornerShape(24.dp)
+            // Always visible microphone
+            IconButton(
+                onClick = onMicClick
+            ) {
+                Icon(
+                    imageVector = if (isListening)
+                        Icons.Default.MicOff
+                    else
+                        Icons.Default.Mic,
+                    contentDescription = "Microphone"
                 )
+            }
 
-                AnimatedVisibility(
-                    visible = text.isNotBlank()
+            // Keyboard toggle
+            IconButton(
+                onClick = onKeyboardClick
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Keyboard,
+                    contentDescription = "Keyboard"
+                )
+            }
+
+            if (isVisible) {
+
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = onSendClick
+
+                    OutlinedTextField(
+                        value = text,
+                        onValueChange = onTextChanged,
+                        modifier = Modifier.weight(1f),
+                        placeholder = {
+                            Text("Type a message")
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(24.dp)
+                    )
+
+                    AnimatedVisibility(
+                        visible = text.isNotBlank()
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Send,
-                            contentDescription = "Send"
-                        )
+
+                        IconButton(
+                            onClick = onSendClick
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Send,
+                                contentDescription = "Send"
+                            )
+                        }
                     }
                 }
             }

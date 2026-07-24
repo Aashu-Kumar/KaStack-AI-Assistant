@@ -24,16 +24,15 @@ import com.aashu.kai.data.local.entity.ChatMessageEntity
 @Composable
 fun ChatList(
     messages: List<ChatMessageEntity>,
+    isTyping: Boolean,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues
 ) {
 
     val listState = rememberLazyListState()
 
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(0)
-        }
+    LaunchedEffect(messages.size, isTyping) {
+        listState.animateScrollToItem(0)
     }
 
     LazyColumn(
@@ -78,6 +77,35 @@ fun ChatList(
                             vertical = 12.dp
                         )
                     )
+                }
+            }
+        }
+
+        if (isTyping) {
+
+            item {
+
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+
+                    Card(
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    ) {
+
+                        Box(
+                            modifier = Modifier.padding(
+                                horizontal = 18.dp,
+                                vertical = 14.dp
+                            )
+                        ) {
+                            TypingIndicator()
+                        }
+                    }
                 }
             }
         }

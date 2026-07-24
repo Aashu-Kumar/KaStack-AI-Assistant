@@ -62,6 +62,21 @@ class HomeViewModel(
         }
     }
 
+    fun setListening(isListening: Boolean) {
+        _uiState.update {
+            it.copy(isListening = isListening)
+        }
+    }
+
+    fun setRecognizedText(text: String) {
+        _uiState.update {
+            it.copy(
+                currentMessage = text,
+                isInputVisible = true
+            )
+        }
+    }
+
 
 
     fun sendMessage() {
@@ -85,15 +100,18 @@ class HomeViewModel(
                 )
             )
 
-            // Clear the input field
+            // Clear input and show typing indicator
             _uiState.update {
-                it.copy(currentMessage = "")
+                it.copy(
+                    currentMessage = "",
+                    isTyping = true
+                )
             }
 
             _chatState.value = ChatState.Responding
 
             // Simulate AI thinking
-            delay(800)
+            delay(1500)
 
             // Insert AI response
             chatMessageDao.insertMessage(
@@ -106,7 +124,9 @@ class HomeViewModel(
                 )
             )
 
-            delay(500)
+            _uiState.update {
+                it.copy(isTyping = false)
+            }
 
             _chatState.value = ChatState.Idle
         }

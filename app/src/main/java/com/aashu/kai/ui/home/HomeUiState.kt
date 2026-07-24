@@ -12,5 +12,7 @@ data class HomeUiState(
 
     val isListening: Boolean = false,
 
-    val amplitude: Float = 0f
+    val amplitude: Float = 0f,
+
+    val isTyping: Boolean = false
 )
