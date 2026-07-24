@@ -12,14 +12,9 @@ interface ChatMessageDao {
 
     @Query("""
         SELECT * FROM chat_messages
-        ORDER BY id DESC
-        LIMIT :limit
-        OFFSET :offset
-    """)
-    fun getMessages(
-        limit: Int,
-        offset: Int
-    ): Flow<List<ChatMessageEntity>>
+        ORDER BY id ASC
+        """)
+    fun getMessages(): Flow<List<ChatMessageEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMessage(
